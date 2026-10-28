@@ -1,0 +1,90 @@
+{
+  "title": "Podcast Loudness Normalizer input",
+  "type": "object",
+  "schemaVersion": 1,
+  "description": "Normalize the loudness of one or more public audio/video URLs with two-pass FFmpeg loudnorm (EBU R128 measurement). Pass `url` for one file or `files` for a batch. Each result row has a download URL and before/after integrated loudness (LUFS), loudness range (LU) and true peak (dBTP).",
+  "properties": {
+    "url": {
+      "title": "Audio or video URL",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Direct, publicly downloadable URL of ONE audio or video file (http/https; redirects followed). Any FFmpeg-readable format: mp3, wav, m4a, aac, flac, ogg, opus, mp4, mov, mkv, webm... Max 2 GB. Must be the media file itself, not a YouTube/Spotify/web page. The first audio stream is normalized. Example: https://download.samplelib.com/mp3/sample-15s.mp3",
+      "prefill": "https://download.samplelib.com/mp3/sample-15s.mp3"
+    },
+    "files": {
+      "title": "Batch of files",
+      "type": "array",
+      "editor": "json",
+      "description": "Optional batch, processed sequentially. Array of objects {\"url\": string (required), plus any of preset, targetLufs, truePeakDbtp, loudnessRange, outputFormat, sampleRate, channels to override the top-level values for that file}. Plain URL strings are also accepted. Example: [{\"url\":\"https://example.com/ep1.wav\"},{\"url\":\"https://example.com/ep1-clip.mp4\",\"preset\":\"youtube\",\"outputFormat\":\"mp4\"}]. Failed items return status=error and are not charged."
+    },
+    "preset": {
+      "title": "Loudness target preset",
+      "type": "string",
+      "editor": "select",
+      "default": "podcast",
+      "enum": ["podcast", "apple", "spotify", "youtube", "ebu-r128", "atsc-a85", "custom"],
+      "enumTitles": ["Podcast (-16 LUFS)", "Apple Podcasts (-16 LUFS)", "Spotify (-14 LUFS)", "YouTube (-14 LUFS)", "EBU R128 broadcast (-23 LUFS)", "ATSC A/85 US broadcast (-24 LUFS)", "Custom (use targetLufs)"],
+      "description": "Integrated loudness target. podcast/apple = -16 LUFS (Apple Podcasts and most podcast hosts recommend -16 stereo); spotify/youtube = -14 LUFS (streaming platforms); ebu-r128 = -23 LUFS (European broadcast); atsc-a85 = -24 LUFS (US TV); custom = the value in targetLufs. Default: podcast. If the true-peak ceiling cannot be honoured at the target (very peaky audio), the ceiling wins and the result may land slightly below target (see normalizationType=dynamic in the output)."
+    },
+    "targetLufs": {
+      "title": "Custom target (LUFS)",
+      "type": "number",
+      "editor": "number",
+      "minimum": -70,
+      "maximum": -5,
+      "description": "Integrated loudness target in LUFS, used only when preset=custom (e.g. -18 for audiobooks/ACX-style voice, -19 for mono podcasts). Range -70 to -5. Ignored for other presets."
+    },
+    "truePeakDbtp": {
+      "title": "True-peak ceiling (dBTP)",
+      "type": "number",
+      "editor": "number",
+      "default": -1,
+      "minimum": -9,
+      "maximum": 0,
+      "description": "Maximum true peak in dBTP (inter-sample peaks, measured with 4x oversampling). Default -1 dBTP (Apple/Spotify/YouTube recommendation). Use -2 for content that will be re-encoded at low bitrates, -1.5 for extra safety. The encoded output is re-measured and re-rendered with a tighter ceiling if lossy encoding pushed it over. Range -9 to 0."
+    },
+    "loudnessRange": {
+      "title": "Loudness range target (LU)",
+      "type": "number",
+      "editor": "number",
+      "default": 11,
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Target loudness range (LRA) in LU passed to loudnorm. Default 11 (FFmpeg default; leaves natural dynamics). Lower values (e.g. 7) compress dynamics more for noisy listening environments, but only take effect if the input LRA is larger. Range 1-50."
+    },
+    "outputFormat": {
+      "title": "Output format",
+      "type": "string",
+      "editor": "select",
+      "default": "mp3",
+      "enum": ["mp3", "m4a", "wav", "flac", "mp4"],
+      "enumTitles": ["MP3 192 kbps", "M4A / AAC 192 kbps", "WAV 24-bit PCM", "FLAC lossless", "MP4 (original video copied, AAC audio)"],
+      "description": "Output container/codec. mp3 = MP3 CBR 192 kbps (universal podcast delivery); m4a = AAC 192 kbps; wav = 24-bit PCM (for further editing); flac = lossless; mp4 = keeps the input video stream untouched (no re-encode) and replaces the audio with normalized AAC 192 kbps - requires a video input. Audio formats drop any video. Default: mp3."
+    },
+    "sampleRate": {
+      "title": "Output sample rate (Hz)",
+      "type": "integer",
+      "editor": "number",
+      "minimum": 8000,
+      "maximum": 192000,
+      "description": "Optional output sample rate in Hz, e.g. 44100 or 48000. Default: same as the input (mp3 is capped at 48000). Leave empty unless your platform requires a specific rate."
+    },
+    "channels": {
+      "title": "Channels",
+      "type": "string",
+      "editor": "select",
+      "default": "keep",
+      "enum": ["keep", "mono", "stereo"],
+      "enumTitles": ["Keep input channels", "Mono (downmix)", "Stereo"],
+      "description": "Output channel layout. keep = same as input (default); mono = downmix to 1 channel (smaller files for voice-only shows); stereo = 2 channels."
+    },
+    "maxDurationSeconds": {
+      "title": "Max input duration (s)",
+      "type": "integer",
+      "editor": "number",
+      "default": 14400,
+      "minimum": 1,
+      "description": "Safety cap in seconds on input duration (default 14400 = 4 hours). Longer inputs are rejected with status=error and are not charged. Billing is per started minute of input audio."
+    }
+  }
+}

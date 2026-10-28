@@ -1,0 +1,17 @@
+{
+  "actorSpecification": 1,
+  "name": "podcast-loudness-normalizer",
+  "title": "Podcast Loudness Normalizer (LUFS, True Peak) for AI Agents",
+  "description": "Normalize podcast, voice or video audio to -16 LUFS (Apple/podcast), -14 LUFS (Spotify/YouTube), -23 LUFS (EBU R128) or a custom target with a true-peak ceiling, using two-pass FFmpeg loudnorm. Returns the file plus before/after LUFS, LRA and true peak.",
+  "version": "0.1",
+  "buildTag": "latest",
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  },
+  "output": "./output_schema.json",
+  "defaultRunOptions": {
+    "memoryMbytes": 4096
+  }
+}

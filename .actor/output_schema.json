@@ -1,0 +1,18 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Loudness normalization results",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Results",
+      "description": "One dataset row per input URL: status, download URL (outputUrl) of the normalized file, target, before/after integrated loudness (LUFS), loudness range (LU), true peak (dBTP), gain applied, or an error message.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=overview"
+    },
+    "files": {
+      "type": "string",
+      "title": "Normalized files",
+      "description": "Key-value store holding the normalized output files.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys"
+    }
+  }
+}

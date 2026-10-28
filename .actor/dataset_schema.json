@@ -1,0 +1,20 @@
+{
+  "actorSpecification": 1,
+  "views": {
+    "overview": {
+      "title": "Results",
+      "transformation": {
+        "fields": ["sourceUrl", "status", "preset", "outputFormat", "beforeLufs", "afterLufs", "afterTruePeakDbtp", "gainAppliedDb", "normalizationType", "outputUrl", "billedMinutes", "error"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "outputUrl": {"label": "Download", "format": "link"},
+          "beforeLufs": {"label": "Before (LUFS)", "format": "number"},
+          "afterLufs": {"label": "After (LUFS)", "format": "number"},
+          "afterTruePeakDbtp": {"label": "After true peak (dBTP)", "format": "number"}
+        }
+      }
+    }
+  }
+}

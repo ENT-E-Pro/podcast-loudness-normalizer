@@ -1,0 +1,20 @@
+{
+  "events": {
+    "apify-actor-start": {
+      "title": "Actor start",
+      "price": 5e-05
+    },
+    "file-normalized": {
+      "title": "File normalized",
+      "description": "One successfully loudness-normalized output file (primary event). Failed files are free.",
+      "price": 0.01,
+      "isPrimary": true
+    },
+    "audio-minute": {
+      "title": "Audio minute normalized",
+      "description": "Per started minute of input audio processed (measure + render + verify passes). Up to 0.5 s of padding is ignored when rounding.",
+      "price": 0.008
+    }
+  },
+  "passPlatformUsageToUser": false
+}
